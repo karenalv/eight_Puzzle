@@ -33,15 +33,15 @@ int puzzleRun(int choice){
                 }
             }
         }
-        Board b(board, 2,2,2,2, nullptr);
-        //print board
-        cout << "\nBoard configuration:\n";
-        for (const auto &row : b.board) {
-            for (int num : row) {
-                cout << num << " ";
-            }
-            cout << endl;
-        }
+        // Board b(board, 2,2,2,2, nullptr);
+        // //print board
+        // cout << "\nBoard configuration:\n";
+        // for (const auto &row : b.board) {
+        //     for (int num : row) {
+        //         cout << num << " ";
+        //     }
+        //     cout << endl;
+        // }
 
     }
     else if(choice ==2){
