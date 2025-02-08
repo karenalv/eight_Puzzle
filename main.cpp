@@ -4,7 +4,7 @@
 using namespace std;
 
 struct Board{
-    vector<vector<int>> board;
+    vector<vector<int> > board;
     int ucs; // G, uniform cost search
     int heur; //H, heuristic cost for misplaced tiles and manhattan
     int totCost; //F, g+h total cost
@@ -12,21 +12,42 @@ struct Board{
     int blankY;
     shared_ptr<Board> original; //original board
 
-    Board(vector<vector<int>> b, int g, int h, int x, int y, shared_ptr<Board> p = nullptr)
+    Board(vector<vector<int> > b, int g, int h, int x, int y, shared_ptr<Board> p = nullptr)
     :board(b), ucs(g), heur(h), totCost(g + h), blankX(x), blankY(y), original(p){}
     
 };
 
 int puzzleRun(int choice){
-    vector<vector<int>> board(3, vector<int>(3)); //initalize board for opt 1 or 2
+    vector<vector<int> > board(3, vector<int>(3)); //initalize board for opt 1 or 2
+    int blankX = -1;
+    int blankY = -1;
     if(choice ==1){
         //take in array/ struct
         cout<< "Enter 9 integers for the board. Enter 0 for the blank space"<<endl;
+        for(int i=0; i<3; i++){
+            for(int j=0; j <3; j++){
+                cin>>board[i][j];
+                if(board[i][j] ==0){
+                    blankX = i;
+                    blankY = j;
+                }
+            }
+        }
+        Board b(board, 2,2,2,2, nullptr);
+        //print board
+        cout << "\nBoard configuration:\n";
+        for (const auto &row : b.board) {
+            for (int num : row) {
+                cout << num << " ";
+            }
+            cout << endl;
+        }
 
     }
     else if(choice ==2){
         //rand function
     }
+    return 0;
 }
 
 
