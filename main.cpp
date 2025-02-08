@@ -83,7 +83,7 @@ void checkDuplicates(const vector<int>&boardNums){
 
 
 void printBoard(const Board& boardPrint){
-    cout << "\nBoard configuration:\n";
+    cout << "Board configuration: "<<endl;
     for (int i =0; i<boardPrint.board.size(); i++){
         for (int j =0; j<boardPrint.board[i].size(); j++){
             cout << boardPrint.board[i][j] << " ";
@@ -132,7 +132,7 @@ int misplacedTiles(const Board& boardStart){
     };
     for(int i =0; i<3; i++){
         for(int j=0; j<3; j++){
-            if(boardStart.board[i][j] != goalBoard[i][j]){
+            if(boardStart.board[i][j] != goalBoard[i][j] && boardStart.board[i][j]!=0){
                 misplaced = misplaced+1;
             }
         }
@@ -142,21 +142,23 @@ int misplacedTiles(const Board& boardStart){
 
 int manhattanDistance(const Board& boardStart){
     int Distance=0;
-    int goalBoard[3][3]{
-        {1,2,3},{4,5,6},{7,8,0}
-    };
+    // int goalBoard[3][3]{
+    //     {1,2,3},{4,5,6},{7,8,0}
+    // };
     for(int i =0; i<3; i++){
         for(int j=0;j<3; j++){
-            if(boardStart.board[i][j]!=goalBoard[i][j]){
-                int x = (boardStart.board[i][j]-1)/3;
-                int y =(boardStart.board[i][j]-1)%3;
-                Distance += abs(i-x)+abs(j-y);
+            if(boardStart.board[i][j]!= 0){
+                int val = boardStart.board[i][j];
+                if(val != 0){
+                    int x = (val-1)/3;
+                    int y =(val-1)%3;
+                    Distance += abs(i-x)+abs(j-y);
+                }
             }
         }
     }
     return Distance;
 }
-
 
 void pathSol(shared_ptr<Board> goalBoard){
     stack<shared_ptr<Board> > solPath;
@@ -215,20 +217,20 @@ int computeHur(const Board& board, int heurType){//reutnrs h val depending on wh
 
 Board uniformCS(const Board& boardStart, int heurType){
     priority_queue<Node, vector<Node>, greater<Node> >pq;
+    unordered_map<string, int> visitedNodes;
     pq.push(Node(boardStart,0)); //initial board in q
-    unordered_set<string> visitedNodes;
     int nodesExpanded =0;
     int maxQueueSize =1;
     int solDepth=0;
-    if(goalState(boardStart) == true){
-        //solDepth =currNode.pathCost;
-        cout<< "Goal State!"<<endl;
-        pathSol(make_shared<Board>(boardStart));
-        cout << "Solution depth was " << solDepth << endl;
-        cout << "Number of nodes expanded: " << nodesExpanded << endl;
-        cout << "Max queue size: " << maxQueueSize << endl;
-        return boardStart;
-    }
+    // if(goalState(boardStart) == true){
+    //     //solDepth =currNode.pathCost;
+    //     cout<< "Goal State!"<<endl;
+    //     pathSol(make_shared<Board>(boardStart));
+    //     cout << "Solution depth was " << solDepth << endl;
+    //     cout << "Number of nodes expanded: " << nodesExpanded << endl;
+    //     cout << "Max queue size: " << maxQueueSize << endl;
+    //     return boardStart;
+    // }
     while(!pq.empty()){
         Node currNode = pq.top();
         pq.pop();
@@ -247,16 +249,22 @@ Board uniformCS(const Board& boardStart, int heurType){
         for(int i=0; i< expandingNodes.size(); i++){
             Board& child = expandingNodes[i];
             string compString= boardString(child);
-            if(visitedNodes.find(compString)== visitedNodes.end()){
-                visitedNodes.insert(compString);
-                int ucs = currNode.pathCost +1; //bc each time we move it inc by 1
-                int heur= computeHur(child, heurType);
-                Board updatedChild(child.board,ucs, heur,child.blankX,child.blankY, make_shared<Board>(currNode.state));
-                pq.push(Node(child, ucs+heur));
+            int ucs= currNode.pathCost +1;
+            int heur =0;
+            if(heurType == 2){
+                heur =misplacedTiles(child);
+            }else if(heurType == 3){
+                heur=manhattanDistance(child);
+            }
+            int totCost = ucs + heur;
+            if(visitedNodes.find(compString)== visitedNodes.end() || totCost< visitedNodes[compString]){\
+                visitedNodes[compString] = totCost;
+                Board updatedChild(child.board, ucs, heur,child.blankX, child.blankY, make_shared<Board>(currNode.state));
+                pq.push(Node(updatedChild, totCost));
             }
         } 
     }
-    cout<< "Failure"<<endl;
+    cout<< "Failure UCS"<<endl;
     return boardStart;
 }
 
@@ -286,10 +294,10 @@ int main(){
     cin>> puzzleChoice;
     if(puzzleChoice == 1){
         //input puzzle
-        Board boardStart =puzzleRun(puzzleChoice);
+        boardStart =puzzleRun(puzzleChoice);
     } else if(puzzleChoice == 2){
         //rand puzzle funct
-        Board boardStart=puzzleRun(puzzleChoice);
+        boardStart=puzzleRun(puzzleChoice);
     } else if(puzzleChoice == 3){
         return 0;
     } else{
