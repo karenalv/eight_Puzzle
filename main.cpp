@@ -22,10 +22,25 @@ struct Board{
     
 };
 
+vector<Board> randomBoard(){
+    vector <Board> rands; //boards , we know depth of (test cases)
+    rands.push_back(Board({{1,2,3},{4,5,6},{7,8,0}}, 3,3));
+    rands.push_back(Board({{1,2,3},{4,5,6},{0,7,8}}, 3,1));
+    rands.push_back(Board({{1,2,3},{5,0,6},{4,7,8}}, 2,2));
+    rands.push_back(Board({{1,3,6},{5,0,2},{4,7,8}}, 2,2));
+    rands.push_back(Board({{1,3,6},{5,0,7},{4,8,2}}, 2,2));
+    rands.push_back(Board({{1,6,7},{5,0,3},{4,8,2}}, 2,2));
+    rands.push_back(Board({{7,1,2},{4,8,5},{6,3,0}}, 3,3));
+    rands.push_back(Board({{0,7,2},{4,6,1},{3,5,8}}, 1,1));
+    
+    return rands;
+}
+
 int puzzleRun(int choice){
     vector<vector<int> > board(3, vector<int>(3)); //initalize board for opt 1 or 2
     int blankX = -1;
     int blankY = -1;
+    Board boardStart({{}}, -1, -1); //declaring so no issues declaring inside the if statments
     if(choice ==1){
         //take in array/ struct
         cout<< "Enter 9 integers for the board. Enter 0 for the blank space"<<endl;
@@ -38,7 +53,7 @@ int puzzleRun(int choice){
                 }
             }
         }
-        Board boardStart(board, blankX, blankY);
+        boardStart = Board(board, blankX, blankY);
         // Board b(board, 2,2,2,2, nullptr);
         // //print board
         // cout << "\nBoard configuration:\n";
@@ -51,27 +66,27 @@ int puzzleRun(int choice){
 
     }
     else if(choice ==2){
-        
         //rand function
-        randomBoard();
+        vector<Board> boards = randomBoard();
+        //cout << "Number of predefined boards: " << boards.size() << endl;
+        srand(time(0));
+        int randB=(rand() % boards.size()); //finds rand number and chooses that board to be used
+        //cout << "Selected random board index: " << randB << endl; //makes sure boards are there and bening passed in
+        boardStart = boards[randB]; // now it reassigns insteaed of redeclaring which is why wasnt printifng
+
     }
 
+    cout << "\nBoard configuration:\n";
+        for (const auto &row : boardStart.board) {
+            for (int num : row) {
+                cout << num << " ";
+            }
+            cout << endl;
+        }
 
     return 0;
 }
 
-vector<Board> randomBoard(){
-    vector <Board> rands; //boards , we know depth of (test cases)
-    rands.push_back(Board({{1,2,3},{4,5,6},{7,8,0}}, 3,3));
-    rands.push_back(Board({{1,2,3},{4,5,6},{0,7,8}}, 3,3));
-    rands.push_back(Board({{1,2,3},{5,0,6},{4,7,8}}, 3,3));
-    rands.push_back(Board({{1,3,6},{5,0,2},{4,7,8}}, 3,3));
-    rands.push_back(Board({{1,3,6},{5,0,7},{4,8,2}}, 3,3));
-    rands.push_back(Board({{1,6,7},{5,0,3},{4,8,2}}, 3,3));
-    rands.push_back(Board({{7,1,2},{4,8,5},{6,3,0}}, 3,3));
-    rands.push_back(Board({{0,7,2},{4,6,1},{3,5,8}}, 3,3));
-    return rands;
-}
 
 
 int main(){
