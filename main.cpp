@@ -45,14 +45,14 @@ struct Node{
 
 vector<Board> randomBoard(){
     vector <Board> rands; //boards , we know depth of (test cases)
-    rands.push_back(Board({{1,2,3},{4,5,6},{7,8,0}}, 3,3));
-    rands.push_back(Board({{1,2,3},{4,5,6},{0,7,8}}, 3,1));
-    rands.push_back(Board({{1,2,3},{5,0,6},{4,7,8}}, 2,2));
-    rands.push_back(Board({{1,3,6},{5,0,2},{4,7,8}}, 2,2));
-    rands.push_back(Board({{1,3,6},{5,0,7},{4,8,2}}, 2,2));
-    rands.push_back(Board({{1,6,7},{5,0,3},{4,8,2}}, 2,2));
-    rands.push_back(Board({{7,1,2},{4,8,5},{6,3,0}}, 3,3));
-    rands.push_back(Board({{0,7,2},{4,6,1},{3,5,8}}, 1,1));
+    rands.push_back(Board({{1,2,3},{4,5,6},{7,8,0}}, 2,2));
+    rands.push_back(Board({{1,2,3},{4,5,6},{0,7,8}}, 2,0));
+    rands.push_back(Board({{1,2,3},{5,0,6},{4,7,8}}, 1,1));
+    rands.push_back(Board({{1,3,6},{5,0,2},{4,7,8}}, 1,1));
+    rands.push_back(Board({{1,3,6},{5,0,7},{4,8,2}}, 1,1));
+    rands.push_back(Board({{1,6,7},{5,0,3},{4,8,2}}, 1,1));
+    rands.push_back(Board({{7,1,2},{4,8,5},{6,3,0}}, 2,2));
+    rands.push_back(Board({{0,7,2},{4,6,1},{3,5,8}}, 0,0));
     
     return rands;
 }
@@ -96,7 +96,7 @@ Board puzzleRun(int choice){
     int blankX = -1;
     int blankY = -1;
     vector<int> boardNums; //array w numbers
-    Board boardStart({{}}, -1, -1); //declaring so no issues declaring inside the if statments
+    Board boardStart({{0, 0, 0}, {0, 0, 0}, {0, 0, 0}}, -1, -1); //declaring so no issues declaring inside the if statments
     if(choice ==1){
         //take in array/ struct
         cout<< "Enter 9 integers for the board. Enter 0 for the blank space."<<endl;
@@ -172,7 +172,7 @@ vector<Board> Expanding(const Board& board){
     vector<Board> expand;
     int xMoves[4]={-1,1,0,0};
     int yMoves[4]={0,0,-1,1};
-    cout << "Expanding node at (" << board.blankX << ", " << board.blankY << ")"<<endl;
+    //cout << "Expanding node at (" << board.blankX << ", " << board.blankY << ")"<<endl;
     for(int i =0; i<4; i++){
         int x= board.blankX+xMoves[i];
         int y=board.blankY+yMoves[i];
@@ -181,7 +181,7 @@ vector<Board> Expanding(const Board& board){
             swap(newBoard[board.blankX][board.blankY],newBoard[x][y]);
             shared_ptr<Board>parentPtr = make_shared<Board>(board);
             Board child(newBoard, x,y, make_shared<Board>(board));
-            cout << "Generated new child board: \n"; // Debugging info
+            //cout << "Generated new child board: \n"; // Debugging info
             printBoard(child);
             expand.push_back(child);
         }
@@ -190,7 +190,7 @@ vector<Board> Expanding(const Board& board){
 }
 
 bool goalState(const Board& board){
-    int goal[3][3]{
+    int goal[3][3]={
         {1,2,3},{4,5,6},{7,8,0}
     };
     for(int i =0; i<3; i++){
@@ -251,12 +251,12 @@ Board uniformCS(const Board& boardStart, int heurType){
             int ucs= currNode.pathCost +1;
             int heur = computeHur(child, heurType);
             int totCost = ucs +heur;
-            cout<<"expanding"<<endl;
+            //cout<<"expanding"<<endl;
             if (visitedNodes.find(compString) ==visitedNodes.end() || ucs < visitedNodes[compString]){
-                cout<< "STARITNG"<<endl;
-                visitedNodes[compString] =ucs+heur; 
+                //cout<< "STARITNG"<<endl;
+                visitedNodes[compString] =ucs; 
                 Board updatedChild(child.board,ucs,heur,child.blankX,child.blankY, make_shared<Board>(currNode.state));
-                pq.push(Node(updatedChild, ucs+heur));
+                pq.push(Node(updatedChild, totCost));
             }
         } 
     }
