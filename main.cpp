@@ -1,5 +1,10 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
+#include <algorithm>
+#include <memory>
+#include <functional>
+#include <queue>
 
 using namespace std;
 
@@ -11,13 +16,41 @@ struct Board{
     int blankX; //x and y pos for blank spot 
     int blankY;
     shared_ptr<Board> original; //original board
+    //default/goal state
+    Board(): ucs(0), heur(0), totCost(0), blankX(0), blankY(0){
+        board ={{1, 2, 3},{4, 5, 6},{7, 8, 0}};
+    }
     //strufct for board only, the G, H and F are found in later funct
     Board(vector<vector<int> > b, int x, int y,shared_ptr<Board> p = nullptr)
         :board(b), ucs(0), heur(0),totCost(0), blankX(x), blankY(y), original(p) {}
     // struct for full board, when prog basically done
     Board(vector<vector<int> > b, int g, int h, int x, int y, shared_ptr<Board> p = nullptr )
     :board(b), ucs(g), heur(h), totCost(g + h), blankX(x), blankY(y), original(p){}
+    //goal state
+
 };
+
+struct Node{
+    Board state;
+    int pathCost; //G cost
+    Node(Board curr, int cost):state(curr), pathCost(cost){}
+    bool operator>(const Node& other)const{ //compares priorqueue
+        return pathCost >other.pathCost;
+    }
+};
+
+bool goalState(const Board& board){
+    int goal[3][3]{
+        {1,2,3},{4,5,6},{7,8,0}
+    };
+    for(int i =0; i<3; i++){
+        for(int j =0; j<3;j++){
+            if (board.board[i][j] !=goal[i][j]){
+                return false; 
+            }
+        }
+    }
+}
 
 
 vector<Board> randomBoard(){
@@ -45,6 +78,7 @@ void checkDuplicates(const vector<int>&boardNums){
         }
     }
 }
+
 
 void printBoard(const Board& boardPrint){
     cout << "\nBoard configuration:\n";
@@ -90,9 +124,42 @@ Board puzzleRun(int choice){
 }
 
 
+Board uniformCS(const Board& boardStart){
+    priority_queue<Node, vector<Node>, greater<Node> >pq;
+    pq.push(Node(boardStart,0));
+    if(pq.empty() == true){
+        cout<< "Failure"<<endl;
+    }else{
+        Node currNode = pq.top();
+        pq.pop();
+        if(goalState(boardStart) == true){
+            cout<< "Goal state!"<<endl;
+            //print sol path
+        }else{
+            
+        }
+        //expand w children , children/expand function
+        //update cost w 1 bc new children
+        //pq push the child of curr node
+        
+    }
+}
+
+void Algorithms(int aChoice, const Board& boardStart){
+    if(aChoice == 1){
+        uniformCS(boardStart);
+    }else if(aChoice ==2){
+        // misplaced tiles
+    }else if(aChoice == 3){
+        //manhattan 
+    }
+}
+
+
 int main(){
     int puzzleChoice;
     int algoChoose;
+    Board boardStart;
     cout<< "8-puzzle program:"<< endl;
     cout<< "Would you like to: input your own puzzle(1), recieve a random puzzle(2), quit(3)"<<endl;
     cout<< "Input one number at a time followed by the 'enter' key."<< endl;
@@ -111,14 +178,14 @@ int main(){
     }
     cout<< "Thanks!"<<endl;
     cout<< "Now please choose the number of the algorithm you'd like to see."<<endl;
-    cout<< "Uniform Cost Search(1), Misplaced Tile heuristic(2), Euclidean distance heuristic(3), or quit(4)."<<endl;
+    cout<< "Uniform Cost Search(1), Misplaced Tile heuristic(2), Manhattan Distance heuristic(3), or quit(4)."<<endl;
     cin>> algoChoose;
     if(algoChoose == 1){
-
+        Algorithms(algoChoose, boardStart);
     }else if(algoChoose ==2){
-
+        Algorithms(algoChoose, boardStart);
     }else if(algoChoose == 3){
-
+        Algorithms(algoChoose, boardStart);
     }else if(algoChoose == 4){
         cout<< "Bye-bye "<<endl;
         return 0;
