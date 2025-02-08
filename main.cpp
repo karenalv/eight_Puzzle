@@ -43,19 +43,6 @@ struct Node{
     }
 };
 
-bool goalState(const Board& board){
-    int goal[3][3]{
-        {1,2,3},{4,5,6},{7,8,0}
-    };
-    for(int i =0; i<3; i++){
-        for(int j =0; j<3;j++){
-            if (board.board[i][j] !=goal[i][j]){
-                return false; 
-            }
-        }
-    }
-    return true;
-}
 
 
 vector<Board> randomBoard(){
@@ -133,8 +120,8 @@ Board puzzleRun(int choice){
         srand(time(0));
         int randB=(rand() % boards.size()); //finds rand number and chooses that board to be used
         boardStart = boards[randB]; // now it reassigns insteaed of redeclaring which is why wasnt printifng
+        printBoard(boardStart);
     }
-
     return boardStart;
 }
 
@@ -202,6 +189,21 @@ vector<Board> Expanding(const Board& board){
     return expand;
 }
 
+bool goalState(const Board& board){
+    int goal[3][3]{
+        {1,2,3},{4,5,6},{7,8,0}
+    };
+    for(int i =0; i<3; i++){
+        for(int j =0; j<3;j++){
+            if (board.board[i][j] != goal[i][j]){
+                return false; 
+            }
+        }
+    }
+    return true;
+}
+
+
 int computeHur(const Board& board, int heurType){//reutnrs h val depending on which algo we use
     if(heurType ==2){
         return misplacedTiles(board);
@@ -217,17 +219,26 @@ Board uniformCS(const Board& boardStart, int heurType){
     unordered_set<string> visitedNodes;
     int nodesExpanded =0;
     int maxQueueSize =1;
-    int solutionDepth =0;
+    int solDepth=0;
+    if(goalState(boardStart) == true){
+        //solDepth =currNode.pathCost;
+        cout<< "Goal State!"<<endl;
+        pathSol(make_shared<Board>(boardStart));
+        cout << "Solution depth was " << solDepth << endl;
+        cout << "Number of nodes expanded: " << nodesExpanded << endl;
+        cout << "Max queue size: " << maxQueueSize << endl;
+        return boardStart;
+    }
     while(!pq.empty()){
         Node currNode = pq.top();
         pq.pop();
         nodesExpanded++;
         maxQueueSize = max(maxQueueSize, (int)pq.size());
         if(goalState(currNode.state) == true){
-            solutionDepth =currNode.pathCost;
+            solDepth =currNode.pathCost;
             cout<< "Goal State!"<<endl;
             pathSol(make_shared<Board>(currNode.state));
-            cout << "Solution depth was " << currNode.pathCost << endl;
+            cout << "Solution depth was " << solDepth << endl;
             cout << "Number of nodes expanded: " << nodesExpanded << endl;
             cout << "Max queue size: " << maxQueueSize << endl;
             return currNode.state;
@@ -261,6 +272,8 @@ void Algorithms(int aChoice, const Board& boardStart){
     //printSol(boardStart)
     printBoard(result);
 }
+
+
 
 
 int main(){
