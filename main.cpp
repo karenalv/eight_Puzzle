@@ -136,6 +136,23 @@ Board puzzleRun(int choice){
     return boardStart;
 }
 
+int misplacedTiles(const Board& boardStart){
+    int misplaced=0;
+    int goalBoard[3][3]{
+        {1,2,3},{4,5,6},{7,8,0}
+    };
+    for(int i =0; i<3; i++){
+        for(int j=0; j<3; j++){
+            if(boardStart.board[i][j] != goalBoard[i][j]){
+                misplaced = misplaced+1;
+            }
+        }
+    }
+}
+
+int manhattanDistance(const Board& boardStart){
+
+}
 
 vector<Board> Expanding(const Board& board){
     vector<Board> expand;
@@ -154,18 +171,24 @@ vector<Board> Expanding(const Board& board){
     return expand;
 }
 
+int computeHur(const Board& board, int heurType){//reutnrs h val depending on which algo we use
+    if(heurType ==2){
+        return misplacedTiles(board);
+    }else if(heurType ==3){
+        return manhattanDistance(board);
+    }
+    return 0;
+}
+
 Board uniformCS(const Board& boardStart){
     priority_queue<Node, vector<Node>, greater<Node> >pq;
     pq.push(Node(boardStart,0)); //initial board in q
     unordered_set<string> visitedNodes;
-    if(pq.empty() == true){
-        cout<< "Failure"<<endl;
-    }else{
+    while(!pq.empty()){
         Node currNode = pq.top();
         pq.pop();
-
         if(goalState(boardStart) == true){
-            cout<< "Goal state!"<<endl;
+            cout<< "Goal State!"<<endl;
             //print sol path
             printBoard(currNode.state);
             return currNode.state;
@@ -174,12 +197,11 @@ Board uniformCS(const Board& boardStart){
         for(int i=0; i< expandingNodes.size(); i++){
             Board& child = expandingNodes[i];
             string compString= boardString(child);
-
             if(visitedNodes.find(compString)== visitedNodes.end()){
                 visitedNodes.insert(compString);
                 int ucs = currNode.pathCost +1; //bc each time we move it inc by 1
-                //int heur= computeHur(child);
-                //pq.push(Node(child, ucs+heur));
+                int heur= computeHur(child);
+                pq.push(Node(child, ucs+heur));
             }
         } 
     }
@@ -191,9 +213,9 @@ void Algorithms(int aChoice, const Board& boardStart){
     if(aChoice == 1){
         uniformCS(boardStart);
     }else if(aChoice ==2){
-        // misplaced tiles
+        misplacedTiles(boardStart);
     }else if(aChoice == 3){
-        //manhattan 
+        manhattanDistance(boardStart);
     }
 }
 
@@ -237,4 +259,3 @@ int main(){
 
     return 0; 
 }
-
