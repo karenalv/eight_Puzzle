@@ -184,7 +184,7 @@ vector<Board> Expanding(const Board& board){
             vector<vector<int> > newBoard= board.board;
             swap(newBoard[board.blankX][board.blankY],newBoard[x][y]);
             shared_ptr<Board>parentPtr = make_shared<Board>(board);
-            Board child(newBoard,x,y, make_shared<Board>(board));
+            Board child(newBoard, x,y, make_shared<Board>(board.board,board.ucs,board.heur,board.blankX,board.blankY,board.original));
             expand.push_back(child);
         }
     }
@@ -211,8 +211,9 @@ int computeHur(const Board& board, int heurType){//reutnrs h val depending on wh
         return misplacedTiles(board);
     }else if(heurType ==3){
         return manhattanDistance(board);
+    }else{
+        return 0;
     }
-    return 0;
 }
 
 Board uniformCS(const Board& boardStart, int heurType){
@@ -236,7 +237,7 @@ Board uniformCS(const Board& boardStart, int heurType){
         pq.pop();
         nodesExpanded++;
         maxQueueSize = max(maxQueueSize, (int)pq.size());
-        if(goalState(currNode.state) == true){
+        if(goalState(currNode.state)){
             solDepth =currNode.pathCost;
             cout<< "Goal State!"<<endl;
             pathSol(make_shared<Board>(currNode.state));
@@ -257,7 +258,7 @@ Board uniformCS(const Board& boardStart, int heurType){
                 heur=manhattanDistance(child);
             }
             int totCost = ucs + heur;
-            if(visitedNodes.find(compString)== visitedNodes.end() || totCost< visitedNodes[compString]){\
+            if(!visitedNodes.count(compString) || totCost< visitedNodes[compString]){
                 visitedNodes[compString] = totCost;
                 Board updatedChild(child.board, ucs, heur,child.blankX, child.blankY, make_shared<Board>(currNode.state));
                 pq.push(Node(updatedChild, totCost));
