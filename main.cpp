@@ -76,13 +76,13 @@ int puzzleRun(int choice){
 
     }
 
-    cout << "\nBoard configuration:\n";
-        for (const auto &row : boardStart.board) {
-            for (int num : row) {
-                cout << num << " ";
-            }
-            cout << endl;
-        }
+    // cout << "\nBoard configuration:\n";
+    //     for (const auto &row : boardStart.board) {
+    //         for (int num : row) {
+    //             cout << num << " ";
+    //         }
+    //         cout << endl;
+    //     }
 
     return 0;
 }
@@ -93,11 +93,14 @@ int main(){
     int puzzleChoice=0;
     cout<< "8-puzzle program:"<< endl;
     cout<< "Would you like to: input your own puzzle(1), recieve a random puzzle(2), quit (3)"<<endl;
+    cout<< "Input one number at a time followed by the 'enter' key"<< endl;
     cin>> puzzleChoice;
     if(puzzleChoice == 1){
         //input puzzle
+        puzzleRun(puzzleChoice);
     } else if(puzzleChoice == 2){
         //rand puzzle funct
+        puzzleRun(puzzleChoice);
     } else if(puzzleChoice == 3){
         return 0;
     } else{
@@ -105,7 +108,7 @@ int main(){
         return 0;
     }
 
-    int final = puzzleRun(puzzleChoice);
+    //int final = puzzleRun(puzzleChoice);
     //cout<< puzzleChoice;
 
     
