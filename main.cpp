@@ -48,7 +48,7 @@ void checkDuplicates(const vector<int>&boardNums){
 }
 
 
-int puzzleRun(int choice){
+Board puzzleRun(int choice){
     vector<vector<int> > board(3, vector<int>(3)); //initalize board for opt 1 or 2
     int blankX = -1;
     int blankY = -1;
@@ -72,33 +72,48 @@ int puzzleRun(int choice){
     } else if(choice ==2){
         //rand function
         vector<Board> boards = randomBoard();
-        //cout << "Number of predefined boards: " << boards.size() << endl;
         srand(time(0));
         int randB=(rand() % boards.size()); //finds rand number and chooses that board to be used
-        //cout << "Selected random board index: " << randB << endl; //makes sure boards are there and bening passed in
         boardStart = boards[randB]; // now it reassigns insteaed of redeclaring which is why wasnt printifng
     }
 
-    return 0;
+    return boardStart;
 }
 
 
 int main(){
-    int puzzleChoice=0;
+    int puzzleChoice;
+    int algoChoose;
     cout<< "8-puzzle program:"<< endl;
     cout<< "Would you like to: input your own puzzle(1), recieve a random puzzle(2), quit(3)"<<endl;
     cout<< "Input one number at a time followed by the 'enter' key."<< endl;
     cin>> puzzleChoice;
     if(puzzleChoice == 1){
         //input puzzle
-        puzzleRun(puzzleChoice);
+        Board boardStart =puzzleRun(puzzleChoice);
     } else if(puzzleChoice == 2){
         //rand puzzle funct
-        puzzleRun(puzzleChoice);
+        Board boardStart=puzzleRun(puzzleChoice);
     } else if(puzzleChoice == 3){
         return 0;
     } else{
         cout<< "Invalid input."<< endl;
+        return 0;
+    }
+    cout<< "Thanks!"<<endl;
+    cout<< "Now please choose the number of the algorithm you'd like to see."<<endl;
+    cout<< "Uniform Cost Search(1), Misplaced Tile heuristic(2), Euclidean distance heuristic(3), or quit(4)."<<endl;
+    cin>> algoChoose;
+    if(algoChoose == 1){
+
+    }else if(algoChoose ==2){
+
+    }else if(algoChoose == 3){
+
+    }else if(algoChoose == 4){
+        cout<< "Bye-bye "<<endl;
+        return 0;
+    }else{
         return 0;
     }
 
