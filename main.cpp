@@ -4,7 +4,9 @@
 #include <algorithm>
 #include <memory>
 #include <functional>
+#include <unordered_set>
 #include <queue>
+#include <string>
 
 using namespace std;
 
@@ -33,7 +35,7 @@ struct Board{
 struct Node{
     Board state;
     int pathCost; //G cost
-    Node(Board curr, int cost):state(curr), pathCost(cost){}
+    Node(Board curr, int cost):state(curr), pathCost(cost){} //constructor
     bool operator>(const Node& other)const{ //compares priorqueue
         return pathCost >other.pathCost;
     }
@@ -50,6 +52,7 @@ bool goalState(const Board& board){
             }
         }
     }
+    return true;
 }
 
 
@@ -67,10 +70,20 @@ vector<Board> randomBoard(){
     return rands;
 }
 
+string boardString(const Board& board){//to make eaiser for UCS
+    string boardStr = "";
+    for(int i=0; i<3; i++){
+        for(int j=0; j<3; j++){
+            boardStr +=to_string(board.board[i][j]) +",";
+        }
+    }
+    return boardStr;
+}
+
 
 void checkDuplicates(const vector<int>&boardNums){
     for(int i =0; i<boardNums.size(); i++){
-        for(int j=i+1; i<boardNums.size();j++){
+        for(int j=i+1; j<boardNums.size();j++){
             if(boardNums[i]== boardNums[j]){
                 cout<< "Please use each number only once."<<endl;
                 exit(0);
@@ -124,25 +137,54 @@ Board puzzleRun(int choice){
 }
 
 
+vector<Board> Expanding(const Board& board){
+    vector<Board> expand;
+    int xMoves[4]={-1,1,0,0};
+    int yMoves[4]={0,0,-1,1};
+    for(int i =0; i<4; i++){
+        int x= board.blankX+xMoves[i];
+        int y=board.blankY+yMoves[i];
+        if(x >=0 and x <3 and y>=0 and y<3){
+            vector<vector<int> > newBoard= board.board;
+            swap(newBoard[board.blankX][board.blankY],newBoard[x][y]);
+            Board child(newBoard,x,y, make_shared<Board>(board));
+            expand.push_back(child);
+        }
+    }
+    return expand;
+}
+
 Board uniformCS(const Board& boardStart){
     priority_queue<Node, vector<Node>, greater<Node> >pq;
-    pq.push(Node(boardStart,0));
+    pq.push(Node(boardStart,0)); //initial board in q
+    unordered_set<string> visitedNodes;
     if(pq.empty() == true){
         cout<< "Failure"<<endl;
     }else{
         Node currNode = pq.top();
         pq.pop();
+
         if(goalState(boardStart) == true){
             cout<< "Goal state!"<<endl;
             //print sol path
-        }else{
-            
+            printBoard(currNode.state);
+            return currNode.state;
         }
-        //expand w children , children/expand function
-        //update cost w 1 bc new children
-        //pq push the child of curr node
-        
+        vector<Board> expandingNodes= Expanding(currNode.state);
+        for(int i=0; i< expandingNodes.size(); i++){
+            Board& child = expandingNodes[i];
+            string compString= boardString(child);
+
+            if(visitedNodes.find(compString)== visitedNodes.end()){
+                visitedNodes.insert(compString);
+                int ucs = currNode.pathCost +1; //bc each time we move it inc by 1
+                //int heur= computeHur(child);
+                //pq.push(Node(child, ucs+heur));
+            }
+        } 
     }
+    cout<< "Failure"<<endl;
+    return boardStart;
 }
 
 void Algorithms(int aChoice, const Board& boardStart){
