@@ -12,7 +12,12 @@ struct Board{
     int blankY;
     shared_ptr<Board> original; //original board
 
-    Board(vector<vector<int> > b, int g, int h, int x, int y, shared_ptr<Board> p = nullptr)
+    //strufct for board only, the G, H and F are found in later funct
+    Board(vector<vector<int> > b, int x, int y,shared_ptr<Board> p = nullptr)
+        :board(b), ucs(0), heur(0),totCost(0), blankX(x), blankY(y), original(p) {}
+
+    // struct for full board, when prog basically done
+    Board(vector<vector<int> > b, int g, int h, int x, int y, shared_ptr<Board> p = nullptr )
     :board(b), ucs(g), heur(h), totCost(g + h), blankX(x), blankY(y), original(p){}
     
 };
@@ -33,10 +38,11 @@ int puzzleRun(int choice){
                 }
             }
         }
+        Board boardStart(board, blankX, blankY);
         // Board b(board, 2,2,2,2, nullptr);
         // //print board
         // cout << "\nBoard configuration:\n";
-        // for (const auto &row : b.board) {
+        // for (const auto &row : boardStart.board) {
         //     for (int num : row) {
         //         cout << num << " ";
         //     }
@@ -45,11 +51,27 @@ int puzzleRun(int choice){
 
     }
     else if(choice ==2){
+        
         //rand function
+        randomBoard();
     }
+
+
     return 0;
 }
 
+vector<Board> randomBoard(){
+    vector <Board> rands; //boards , we know depth of (test cases)
+    rands.push_back(Board({{1,2,3},{4,5,6},{7,8,0}}, 3,3));
+    rands.push_back(Board({{1,2,3},{4,5,6},{0,7,8}}, 3,3));
+    rands.push_back(Board({{1,2,3},{5,0,6},{4,7,8}}, 3,3));
+    rands.push_back(Board({{1,3,6},{5,0,2},{4,7,8}}, 3,3));
+    rands.push_back(Board({{1,3,6},{5,0,7},{4,8,2}}, 3,3));
+    rands.push_back(Board({{1,6,7},{5,0,3},{4,8,2}}, 3,3));
+    rands.push_back(Board({{7,1,2},{4,8,5},{6,3,0}}, 3,3));
+    rands.push_back(Board({{0,7,2},{4,6,1},{3,5,8}}, 3,3));
+    return rands;
+}
 
 
 int main(){
