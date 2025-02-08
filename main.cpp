@@ -17,7 +17,6 @@ struct Board{
     // struct for full board, when prog basically done
     Board(vector<vector<int> > b, int g, int h, int x, int y, shared_ptr<Board> p = nullptr )
     :board(b), ucs(g), heur(h), totCost(g + h), blankX(x), blankY(y), original(p){}
-    
 };
 
 
@@ -44,6 +43,16 @@ void checkDuplicates(const vector<int>&boardNums){
                 exit(0);
             }
         }
+    }
+}
+
+void printBoard(const Board& boardPrint){
+    cout << "\nBoard configuration:\n";
+    for (int i =0; i<boardPrint.board.size(); i++){
+        for (int j =0; j<boardPrint.board[i].size(); j++){
+            cout << boardPrint.board[i][j] << " ";
+        }
+        cout << endl;
     }
 }
 
