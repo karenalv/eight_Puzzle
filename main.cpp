@@ -9,8 +9,8 @@
 #include <string>
 #include <stack>
 
-
 using namespace std;
+
 
 struct Board{
     vector<vector<int> > board;
@@ -41,8 +41,6 @@ struct Node{
     }
 };
 
-
-
 vector<Board> randomBoard(){
     vector <Board> rands; //boards , we know depth of (test cases)
     rands.push_back(Board({{1,2,3},{4,5,6},{7,8,0}}, 2,2));
@@ -67,7 +65,6 @@ string boardString(const Board& board){//to make eaiser for UCS
     return boardStr;
 }
 
-
 void checkDuplicates(const vector<int>&boardNums){
     for(int i =0; i<boardNums.size(); i++){
         for(int j=i+1; j<boardNums.size();j++){
@@ -79,7 +76,6 @@ void checkDuplicates(const vector<int>&boardNums){
     }
 }
 
-
 void printBoard(const Board& boardPrint){
     cout << "Board configuration: "<<endl;
     for (int i =0; i<boardPrint.board.size(); i++){
@@ -89,7 +85,6 @@ void printBoard(const Board& boardPrint){
         cout << endl;
     }
 }
-
 
 Board puzzleRun(int choice){
     vector<vector<int> > board(3, vector<int>(3)); //initalize board for opt 1 or 2
@@ -130,8 +125,8 @@ int misplacedTiles(const Board& boardStart){
     };
     for(int i =0; i<3; i++){
         for(int j=0; j<3; j++){
-            if(boardStart.board[i][j] != goalBoard[i][j] && boardStart.board[i][j]!=0){
-                misplaced = misplaced+1;
+            if(boardStart.board[i][j] != goalBoard[i][j] &&boardStart.board[i][j]!=0){//not epmtpy spot
+                misplaced ++;
             }
         }
     }
@@ -142,7 +137,7 @@ int manhattanDistance(const Board& boardStart){
     int Distance=0;
     for(int i =0; i<3; i++){
         for(int j=0;j<3; j++){
-            if(boardStart.board[i][j]!= 0){
+            if(boardStart.board[i][j]!= 0){//not empty spot
                 int val = boardStart.board[i][j];
                 if(val != 0){
                     int x = (val-1)/3;
@@ -182,7 +177,7 @@ vector<Board> Expanding(const Board& board){
             shared_ptr<Board>parentPtr = make_shared<Board>(board);
             Board child(newBoard, x,y, make_shared<Board>(board));
             //cout << "Generated new child board: \n"; // Debugging info
-            printBoard(child);
+            //printBoard(child);
             expand.push_back(child);
         }
     }
@@ -203,7 +198,6 @@ bool goalState(const Board& board){
     return true;
 }
 
-
 int computeHur(const Board& board, int heurType){//reutnrs h val depending on which algo we use
     if(heurType ==2){
         return misplacedTiles(board);
@@ -220,6 +214,7 @@ Board uniformCS(const Board& boardStart, int heurType){
     int nodesExpanded =0;
     int maxQueueSize =1;
     int solDepth=0;
+
     if (goalState(boardStart)){
         cout << "Goal State!" <<endl;
         pathSol(make_shared<Board>(boardStart));
@@ -230,30 +225,35 @@ Board uniformCS(const Board& boardStart, int heurType){
     }
     pq.push(Node(boardStart,0)); //initial board in q
     visitedNodes[boardString(boardStart)]=0;
+
     while(!pq.empty()){
         Node currNode = pq.top();
         pq.pop();
         nodesExpanded++;
         maxQueueSize = max(maxQueueSize, (int)pq.size());
+        cout<<"The best state to expand with g(n)= "<<currNode.pathCost;
+        cout<< " and h(n)= "<< computeHur(currNode.state, heurType)<< " is... "<<endl;
+        cout << " (f(n) = " << currNode.pathCost + computeHur(currNode.state, heurType) << ")" << endl;
+        printBoard(currNode.state);
+
         if(goalState(currNode.state)){
-            solDepth =currNode.pathCost;
+            solDepth = currNode.pathCost;
             cout<< "Goal State!"<<endl;
             pathSol(make_shared<Board>(currNode.state));
-            cout << "Solution depth was " << solDepth << endl;
+            cout << "Solution depth: " << solDepth << endl;
             cout << "Number of nodes expanded: " << nodesExpanded << endl;
             cout << "Max queue size: " << maxQueueSize << endl;
             return currNode.state;
         }
         vector<Board> expandingNodes= Expanding(currNode.state);
+
         for(int i=0; i< expandingNodes.size(); i++){
             Board& child = expandingNodes[i];
             string compString= boardString(child);
-            int ucs= currNode.pathCost +1;
+            int ucs= currNode.pathCost + 1;
             int heur = computeHur(child, heurType);
-            int totCost = ucs +heur;
-            //cout<<"expanding"<<endl;
+            int totCost = ucs;
             if (visitedNodes.find(compString) ==visitedNodes.end() || ucs < visitedNodes[compString]){
-                //cout<< "STARITNG"<<endl;
                 visitedNodes[compString] =ucs; 
                 Board updatedChild(child.board,ucs,heur,child.blankX,child.blankY, make_shared<Board>(currNode.state));
                 pq.push(Node(updatedChild, totCost));
@@ -275,8 +275,6 @@ void Algorithms(int aChoice, const Board& boardStart){
     }
     printBoard(result);
 }
-
-
 
 
 int main(){
