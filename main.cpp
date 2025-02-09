@@ -51,7 +51,6 @@ vector<Board> randomBoard(){
     rands.push_back(Board({{1,6,7},{5,0,3},{4,8,2}}, 1,1));
     rands.push_back(Board({{7,1,2},{4,8,5},{6,3,0}}, 2,2));
     rands.push_back(Board({{0,7,2},{4,6,1},{3,5,8}}, 0,0));
-    
     return rands;
 }
 
@@ -93,7 +92,6 @@ Board puzzleRun(int choice){
     vector<int> boardNums; //array w numbers
     Board boardStart({{0, 0, 0}, {0, 0, 0}, {0, 0, 0}}, -1, -1); //declaring so no issues declaring inside the if statments
     if(choice ==1){
-        //take in array/ struct
         cout<< "Enter 9 integers for the board. Enter 0 for the blank space."<<endl;
         for(int i=0; i<3; i++){
             for(int j=0; j <3; j++){
@@ -108,7 +106,6 @@ Board puzzleRun(int choice){
         checkDuplicates(boardNums);
         boardStart = Board(board, blankX, blankY);
     } else if(choice ==2){
-        //rand function
         vector<Board> boards = randomBoard();
         srand(time(0));
         int randB=(rand() % boards.size()); //finds rand number and chooses that board to be used
@@ -167,7 +164,6 @@ vector<Board> Expanding(const Board& board){
     vector<Board> expand;
     int xMoves[4]={-1,1,0,0};
     int yMoves[4]={0,0,-1,1};
-    //cout << "Expanding node at (" << board.blankX << ", " << board.blankY << ")"<<endl;
     for(int i =0; i<4; i++){
         int x= board.blankX+xMoves[i];
         int y=board.blankY+yMoves[i];
@@ -176,8 +172,6 @@ vector<Board> Expanding(const Board& board){
             swap(newBoard[board.blankX][board.blankY],newBoard[x][y]);
             shared_ptr<Board>parentPtr = make_shared<Board>(board);
             Board child(newBoard, x,y, make_shared<Board>(board));
-            //cout << "Generated new child board: \n"; // Debugging info
-            //printBoard(child);
             expand.push_back(child);
         }
     }
@@ -214,7 +208,6 @@ Board uniformCS(const Board& boardStart, int heurType){
     int nodesExpanded =0;
     int maxQueueSize =1;
     int solDepth=0;
-
     if (goalState(boardStart)){
         cout << "Goal State!" <<endl;
         pathSol(make_shared<Board>(boardStart));
@@ -225,7 +218,6 @@ Board uniformCS(const Board& boardStart, int heurType){
     }
     pq.push(Node(boardStart,0)); //initial board in q
     visitedNodes[boardString(boardStart)]=0;
-
     while(!pq.empty()){
         Node currNode = pq.top();
         pq.pop();
@@ -235,7 +227,6 @@ Board uniformCS(const Board& boardStart, int heurType){
         cout<< " and h(n)= "<< computeHur(currNode.state, heurType)<< " is... "<<endl;
         cout << " (f(n) = " << currNode.pathCost + computeHur(currNode.state, heurType) << ")" << endl;
         printBoard(currNode.state);
-
         if(goalState(currNode.state)){
             solDepth = currNode.pathCost;
             cout<< "Goal State!"<<endl;
@@ -246,7 +237,6 @@ Board uniformCS(const Board& boardStart, int heurType){
             return currNode.state;
         }
         vector<Board> expandingNodes= Expanding(currNode.state);
-
         for(int i=0; i< expandingNodes.size(); i++){
             Board& child = expandingNodes[i];
             string compString= boardString(child);
