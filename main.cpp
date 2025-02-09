@@ -57,25 +57,25 @@ vector<Board> randomBoard(){
 string boardString(const Board& board){//to make eaiser for UCS
     string boardStr = "";
     for(int i=0; i<3; i++){
-        for(int j=0; j<3; j++){
+        for(int j=0; j<3; j++){//simply adds everythign to a string so we can compare etc easier
             boardStr +=to_string(board.board[i][j]) +",";
         }
     }
     return boardStr;
 }
 
-void checkDuplicates(const vector<int>&boardNums){
+void checkDuplicates(const vector<int>&boardNums){//to make sure we can at least use the boards
     for(int i =0; i<boardNums.size(); i++){
         for(int j=i+1; j<boardNums.size();j++){
             if(boardNums[i]== boardNums[j]){
                 cout<< "Please use each number only once."<<endl;
-                exit(0);
+                exit(0);//ends program bc cant reinput numbers again, complicated T^T
             }
         }
     }
 }
 
-void printBoard(const Board& boardPrint){
+void printBoard(const Board& boardPrint){ //prints board doesnt return
     cout << "Board configuration: "<<endl;
     for (int i =0; i<boardPrint.board.size(); i++){
         for (int j =0; j<boardPrint.board[i].size(); j++){
@@ -85,7 +85,7 @@ void printBoard(const Board& boardPrint){
     }
 }
 
-Board puzzleRun(int choice){
+Board puzzleRun(int choice){ //main function 1
     vector<vector<int> > board(3, vector<int>(3)); //initalize board for opt 1 or 2
     int blankX = -1;
     int blankY = -1;
@@ -96,7 +96,7 @@ Board puzzleRun(int choice){
         for(int i=0; i<3; i++){
             for(int j=0; j <3; j++){
                 cin>>board[i][j];
-                boardNums.push_back(board[i][j]);
+                boardNums.push_back(board[i][j]);//makes board :3
                 if(board[i][j] ==0){
                     blankX = i;
                     blankY = j;
@@ -115,7 +115,7 @@ Board puzzleRun(int choice){
     return boardStart;
 }
 
-int misplacedTiles(const Board& boardStart){
+int misplacedTiles(const Board& boardStart){ //algo 1
     int misplaced=0;
     int goalBoard[3][3]{
         {1,2,3},{4,5,6},{7,8,0}
@@ -123,23 +123,23 @@ int misplacedTiles(const Board& boardStart){
     for(int i =0; i<3; i++){
         for(int j=0; j<3; j++){
             if(boardStart.board[i][j] != goalBoard[i][j] &&boardStart.board[i][j]!=0){//not epmtpy spot
-                misplaced ++;
+                misplaced ++; //just checks location to see if match, esle +1
             }
         }
     }
     return misplaced;
 }
 
-int manhattanDistance(const Board& boardStart){
+int manhattanDistance(const Board& boardStart){ //algo 2
     int Distance=0;
     for(int i =0; i<3; i++){
         for(int j=0;j<3; j++){
             if(boardStart.board[i][j]!= 0){//not empty spot
                 int val = boardStart.board[i][j];
-                if(val != 0){
+                if(val != 0){//doesnt check the 0 bc its never wrong
                     int x = (val-1)/3;
                     int y =(val-1)%3;
-                    Distance += abs(i-x)+abs(j-y);
+                    Distance += abs(i-x)+abs(j-y);//abs distance no diagonals
                 }
             }
         }
@@ -147,10 +147,10 @@ int manhattanDistance(const Board& boardStart){
     return Distance;
 }
 
-void pathSol(shared_ptr<Board> goalBoard){
+void pathSol(shared_ptr<Board> goalBoard){ //pointer funct to how the boards are updated and how they point to each other
     stack<shared_ptr<Board> > solPath;
     shared_ptr<Board> curr=goalBoard;
-    while(curr!=nullptr){
+    while(curr!=nullptr){//when theres a board next
         solPath.push(curr);
         curr=curr->original;
     }
@@ -160,17 +160,17 @@ void pathSol(shared_ptr<Board> goalBoard){
     }
 }
 
-vector<Board> Expanding(const Board& board){
+vector<Board> Expanding(const Board& board){//expanding nodes
     vector<Board> expand;
-    int xMoves[4]={-1,1,0,0};
+    int xMoves[4]={-1,1,0,0};//moves allowed
     int yMoves[4]={0,0,-1,1};
     for(int i =0; i<4; i++){
         int x= board.blankX+xMoves[i];
         int y=board.blankY+yMoves[i];
         if(x >=0 and x <3 and y>=0 and y<3){
             vector<vector<int> > newBoard= board.board;
-            swap(newBoard[board.blankX][board.blankY],newBoard[x][y]);
-            shared_ptr<Board>parentPtr = make_shared<Board>(board);
+            swap(newBoard[board.blankX][board.blankY],newBoard[x][y]);//changes the orig board w the new board w the new move
+            shared_ptr<Board>parentPtr = make_shared<Board>(board);//updateds pointer
             Board child(newBoard, x,y, make_shared<Board>(board));
             expand.push_back(child);
         }
@@ -178,7 +178,7 @@ vector<Board> Expanding(const Board& board){
     return expand;
 }
 
-bool goalState(const Board& board){
+bool goalState(const Board& board){//goal state :3 not really used tbh
     int goal[3][3]={
         {1,2,3},{4,5,6},{7,8,0}
     };
@@ -202,13 +202,13 @@ int computeHur(const Board& board, int heurType){//reutnrs h val depending on wh
     }
 }
 
-Board uniformCS(const Board& boardStart, int heurType){
-    priority_queue<Node, vector<Node>, greater<Node> >pq;
+Board uniformCS(const Board& boardStart, int heurType){ //main function 2
+    priority_queue<Node, vector<Node>, greater<Node> >pq;//creates priotiry quese 
     unordered_map<string, int> visitedNodes;
     int nodesExpanded =0;
     int maxQueueSize =1;
     int solDepth=0;
-    if (goalState(boardStart)){
+    if (goalState(boardStart)){ //checks if orig board is goal state so it doesnt have to do the rest
         cout << "Goal State!" <<endl;
         pathSol(make_shared<Board>(boardStart));
         cout << "Solution depth was" << solDepth<<endl;
@@ -218,16 +218,16 @@ Board uniformCS(const Board& boardStart, int heurType){
     }
     pq.push(Node(boardStart,0)); //initial board in q
     visitedNodes[boardString(boardStart)]=0;
-    while(!pq.empty()){
+    while(!pq.empty()){//while noees in queue 
         Node currNode = pq.top();
         pq.pop();
         nodesExpanded++;
         maxQueueSize = max(maxQueueSize, (int)pq.size());
-        cout<<"The best state to expand with g(n)= "<<currNode.pathCost;
+        cout<<"The best state to expand with g(n)= "<<currNode.pathCost;//printing lines w variables to show the path of the code 
         cout<< " and h(n)= "<< computeHur(currNode.state, heurType)<< " is... "<<endl;
         cout << " (f(n) = " << currNode.pathCost + computeHur(currNode.state, heurType) << ")" << endl;
         printBoard(currNode.state);
-        if(goalState(currNode.state)){
+        if(goalState(currNode.state)){//checking again within the loop so when we get goal state in loop it outputs
             solDepth = currNode.pathCost;
             cout<< "Goal State!"<<endl;
             pathSol(make_shared<Board>(currNode.state));
@@ -236,25 +236,25 @@ Board uniformCS(const Board& boardStart, int heurType){
             cout << "Max queue size: " << maxQueueSize << endl;
             return currNode.state;
         }
-        vector<Board> expandingNodes= Expanding(currNode.state);
+        vector<Board> expandingNodes= Expanding(currNode.state);//updatign nodes
         for(int i=0; i< expandingNodes.size(); i++){
             Board& child = expandingNodes[i];
-            string compString= boardString(child);
+            string compString= boardString(child);//when the nodes are expanding so it the path cost since were moving 1 more
             int ucs= currNode.pathCost + 1;
-            int heur = computeHur(child, heurType);
-            int totCost = ucs;
-            if (visitedNodes.find(compString) ==visitedNodes.end() || ucs < visitedNodes[compString]){
+            int heur = computeHur(child, heurType);//takes to find heur
+            int totCost = ucs;//BRAH biggest issue had it as ucs +heur for the longest time omg T^T
+            if (visitedNodes.find(compString) ==visitedNodes.end() || ucs < visitedNodes[compString]){//makign sure were still ont eh right track w the right nodes 
                 visitedNodes[compString] =ucs; 
                 Board updatedChild(child.board,ucs,heur,child.blankX,child.blankY, make_shared<Board>(currNode.state));
                 pq.push(Node(updatedChild, totCost));
             }
         } 
     }
-    cout<< "Failure UCS"<<endl;
+    cout<< "Failure UCS"<<endl; //if something goes wrong within the funciton, mostly for debugging
     return boardStart;
 }
 
-void Algorithms(int aChoice, const Board& boardStart){
+void Algorithms(int aChoice, const Board& boardStart){//takes in user choice, shrimple
     Board result;
     if(aChoice == 1){
         result= uniformCS(boardStart,0);
