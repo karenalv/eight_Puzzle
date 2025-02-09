@@ -1,0 +1,5 @@
+8-puzzle program:
+Would you like to: input your own puzzle(1), recieve a random puzzle(2), quit(3)
+Input one number at a time followed by the 'enter' key.
+Enter 9 integers for the board. Enter 0 for the blank space.
+Please use each number only once.
